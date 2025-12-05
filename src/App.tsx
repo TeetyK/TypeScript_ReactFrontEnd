@@ -1,5 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { APITester } from "./APITester";
+// import { APITester } from "./APITester";
 import { Login } from './Login'
 import "./index.css";
 
@@ -12,13 +12,16 @@ export function App() {
         <Card>
           <CardHeader className="gap-4">
             <CardTitle className="text-3xl font-bold">Login</CardTitle>
+            <CardDescription>
+              Login to into system with API
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <Login />
           </CardContent>
         </Card>
       </div>
-      <Card>
+      {/* <Card>
         <CardHeader className="gap-4">
           <CardTitle className="text-3xl font-bold">Bun + React</CardTitle>
           <CardDescription>
@@ -29,7 +32,7 @@ export function App() {
         <CardContent>
           <APITester />
         </CardContent>
-      </Card>
+      </Card> */}
     </div>
   );
 }
