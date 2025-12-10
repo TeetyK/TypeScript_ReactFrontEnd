@@ -1,13 +1,14 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle , CardFooter} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@radix-ui/react-label";
+import { Label } from "@/components/ui/label";
 import { useState } from 'react';
+
 export function Login(){
   const [email , setEmail ] = useState('');
   const [password , setPassword ] = useState('');
   const [token , setToken ] = useState('');
   const [error , setError] = useState('');
+  
   const handleLogin = async () => {
     setError('');
     setToken('');
@@ -29,6 +30,7 @@ export function Login(){
       setError("An error occured. Please try again");
     }
   }
+
   return (
       <>
         <div className="grid gap-2 text-left">
@@ -50,4 +52,3 @@ export function Login(){
       </>
   )
 }
-

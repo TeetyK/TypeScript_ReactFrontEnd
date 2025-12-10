@@ -21,10 +21,18 @@ export function App() {
             <Login />
           </CardContent>
         </Card>
+        <Card>
+          <CardHeader className="gap-4">
+            <CardTitle className="text-3xl font-bold">Register</CardTitle>
+            <CardDescription>
+              Register to the system
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Register />
+          </CardContent>
+        </Card>
       </div>
-      <span>TEST
-        <Register />
-      </span>
     </div>
   );
 }
