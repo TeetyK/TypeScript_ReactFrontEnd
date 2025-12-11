@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -27,38 +28,55 @@ export function APITester() {
   };
 
   return (
-    <div className="flex flex-col gap-6">
-      <form onSubmit={testEndpoint} className="flex items-center gap-2">
-        <Label htmlFor="method" className="sr-only">
-          Method
-        </Label>
-        <Select name="method" defaultValue="GET">
-          <SelectTrigger className="w-[100px]" id="method">
-            <SelectValue placeholder="Method" />
-          </SelectTrigger>
-          <SelectContent align="start">
-            <SelectItem value="GET">GET</SelectItem>
-            <SelectItem value="PUT">PUT</SelectItem>
-          </SelectContent>
-        </Select>
-        <Label htmlFor="endpoint" className="sr-only">
-          Endpoint
-        </Label>
-        <Input id="endpoint" type="text" name="endpoint" defaultValue="/api/hello" placeholder="/api/hello" />
-        <Button type="submit" variant="secondary">
-          Send
-        </Button>
-      </form>
-      <Label htmlFor="response" className="sr-only">
-        Response
-      </Label>
-      <Textarea
-        ref={responseInputRef}
-        id="response"
-        readOnly
-        placeholder="Response will appear here..."
-        className="min-h-[140px] font-mono resize-y"
-      />
+    <div className="container mx-auto p-8 text-center relative z-10">
+      <div className="flex justify-center items-center gap-8 mb-8">
+        <Card className="w-[600px]">
+          <CardHeader>
+            <CardTitle>API Tester</CardTitle>
+            <CardDescription>Test your API endpoints</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col gap-6">
+              <form onSubmit={testEndpoint} className="flex items-center gap-2">
+                <Label htmlFor="method" className="sr-only">
+                  Method
+                </Label>
+                <Select name="method" defaultValue="GET">
+                  <SelectTrigger className="w-[100px]" id="method">
+                    <SelectValue placeholder="Method" />
+                  </SelectTrigger>
+                  <SelectContent align="start">
+                    <SelectItem value="GET">GET</SelectItem>
+                    <SelectItem value="PUT">PUT</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Label htmlFor="endpoint" className="sr-only">
+                  Endpoint
+                </Label>
+                <Input id="endpoint" type="text" name="endpoint" defaultValue="/api/hello" placeholder="/api/hello" />
+                <Button type="submit" variant="secondary">
+                  Send
+                </Button>
+              </form>
+              <Label htmlFor="response" className="sr-only">
+                Response
+              </Label>
+              <Textarea
+                ref={responseInputRef}
+                id="response"
+                readOnly
+                placeholder="Response will appear here..."
+                className="min-h-[140px] font-mono resize-y"
+              />
+              <div className="mt-4 text-center text-sm">
+                <a href="/" className="underline">
+                  Go back
+                </a>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

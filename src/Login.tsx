@@ -43,7 +43,7 @@ export function Login(){
         </div>
         <Button className="w-full mt-3" onClick={handleLogin}>Sign in</Button>
         <div className="mt-4 text-center text-sm">
-          <a href="#" className="underline">
+          <a href="/forgot-password" className="underline">
             Forgot your password?
           </a>
         </div>

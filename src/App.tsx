@@ -1,7 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-// import { APITester } from "./APITester";
-import { Login } from './Login'
-import { Register } from './Register'
+import { Auth } from './Auth';
 import "./index.css";
 
 
@@ -10,26 +8,15 @@ export function App() {
   return (
     <div className="container mx-auto p-8 text-center relative z-10">
       <div className="flex justify-center items-center gap-8 mb-8">
-        <Card>
+        <Card className="w-[400px]">
           <CardHeader className="gap-4">
-            <CardTitle className="text-3xl font-bold">Login</CardTitle>
+            <CardTitle className="text-3xl font-bold">Welcome</CardTitle>
             <CardDescription>
-              Login to into system with API
+              Login or Register to continue
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Login />
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="gap-4">
-            <CardTitle className="text-3xl font-bold">Register</CardTitle>
-            <CardDescription>
-              Register to the system
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Register />
+            <Auth />
           </CardContent>
         </Card>
       </div>

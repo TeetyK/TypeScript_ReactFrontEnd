@@ -7,12 +7,21 @@
 
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { App } from "./App";
+import { ForgotPassword } from "./ForgotPassword";
+import { APITester } from "./APITester";
 
 const elem = document.getElementById("root")!;
 const app = (
   <StrictMode>
-    <App />
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<App />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/api-tester" element={<APITester />} />
+      </Routes>
+    </BrowserRouter>
   </StrictMode>
 );
 
