@@ -7,6 +7,7 @@ export function Register(){
     const [email , setEmail ] = useState('');
     const [password , setPassword ] = useState('');
     const [name , setName ] = useState('');
+    const [username , setUsername ] = useState('');
     const [token , setToken ] = useState('');
     const [error , setError ] = useState('');
 
@@ -19,7 +20,7 @@ export function Register(){
             headers: {
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ name, email, password }),
+            body: JSON.stringify({ name, email, password ,username}),
           });
           const data = await response.json();
           if (response.ok) {
@@ -41,6 +42,10 @@ export function Register(){
             <div className="grid gap-2 text-left">
                 <Label htmlFor="email">Email</Label>
                 <Input id="email" type="email" placeholder="m@example.com" required value={email} onChange={e => setEmail(e.target.value)} />
+            </div>
+            <div className="grid gap-2 text-left">
+                <Label htmlFor="name">Username</Label>
+                <Input id="name" type="text" placeholder="UserName" required value={username} onChange={e => setUsername(e.target.value)} />
             </div>
             <div className="grid gap-2 text-left">
                 <Label htmlFor="password">Password</Label>
