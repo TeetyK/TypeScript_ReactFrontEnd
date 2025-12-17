@@ -8,6 +8,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Management } from "./Management";
 import { App } from "./App";
 import { ForgotPassword } from "./ForgotPassword";
 import { APITester } from "./APITester";
@@ -20,6 +21,7 @@ const app = (
         <Route path="/" element={<App />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/api-tester" element={<APITester />} />
+        <Route path="/management" element={<Management />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>

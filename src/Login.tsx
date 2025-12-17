@@ -2,12 +2,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export function Login(){
   const [email , setEmail ] = useState('');
   const [password , setPassword ] = useState('');
   const [token , setToken ] = useState('');
   const [error , setError] = useState('');
+  const navigate = useNavigate();
   
   const handleLogin = async () => {
     setError('');
@@ -23,6 +25,7 @@ export function Login(){
       const data = await response.json();
       if(response.ok){
         setToken(data.token);
+        navigate('/management');
       }else{
         setError(data.message || "An error occured");
       }
