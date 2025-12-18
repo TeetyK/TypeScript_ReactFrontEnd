@@ -2,18 +2,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export function Register(){
     const [email , setEmail ] = useState('');
     const [password , setPassword ] = useState('');
     const [name , setName ] = useState('');
     const [username , setUsername ] = useState('');
-    const [token , setToken ] = useState('');
     const [error , setError ] = useState('');
+    const navigate = useNavigate();
 
     const handleRegister = async () => {
         setError('');
-        setToken('');
         try {
           const response = await fetch('http://localhost:8080/register', {
             method: 'POST',
@@ -24,7 +24,8 @@ export function Register(){
           });
           const data = await response.json();
           if (response.ok) {
-            setToken(data.token);
+            localStorage.setItem('token', data.token);
+            navigate('/management');
           } else {
             setError(data.message || "An error occured");
           }
@@ -52,7 +53,6 @@ export function Register(){
                 <Input id="password" type="password" required placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} />
             </div>
             <Button className="w-full mt-3" onClick={handleRegister}>Sign up</Button>
-            {token && <div className="mt-4 text-sm text-green-500">Success! Token: {token}</div>}
             {error && <div className="mt-4 text-sm text-red-500">{error}</div>}
         </>
     )

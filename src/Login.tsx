@@ -3,17 +3,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from './contexts/AuthContext';
 
 export function Login(){
   const [email , setEmail ] = useState('');
   const [password , setPassword ] = useState('');
-  const [token , setToken ] = useState('');
   const [error , setError] = useState('');
   const navigate = useNavigate();
+  const { login } = useAuth();
   
   const handleLogin = async () => {
     setError('');
-    setToken('');
     try {
       const response = await fetch('http://localhost:8080/login',{
         method:'POST',
@@ -24,7 +24,7 @@ export function Login(){
       });
       const data = await response.json();
       if(response.ok){
-        setToken(data.token);
+        login(data.token);
         navigate('/management');
       }else{
         setError(data.message || "An error occured");
@@ -50,7 +50,6 @@ export function Login(){
             Forgot your password?
           </a>
         </div>
-      {token && <div className="mt-4 text-sm text-green-500">Logged in! Token: {token}</div>}
       {error && <div className="mt-4 text-sm text-red-500">{error}</div>}
       </>
   )

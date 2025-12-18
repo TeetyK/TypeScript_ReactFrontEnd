@@ -12,18 +12,25 @@ import { Management } from "./Management";
 import { App } from "./App";
 import { ForgotPassword } from "./ForgotPassword";
 import { APITester } from "./APITester";
+import { AuthProvider } from "./contexts/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
+import "./index.css";
 
 const elem = document.getElementById("root")!;
 const app = (
   <StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<App />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/api-tester" element={<APITester />} />
-        <Route path="/management" element={<Management />} />
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/api-tester" element={<APITester />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/management" element={<Management />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   </StrictMode>
 );
 

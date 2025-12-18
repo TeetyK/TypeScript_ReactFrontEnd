@@ -2,15 +2,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useNavigate } from "react-router-dom";
+import { useAuth } from "./contexts/AuthContext";
 
 export function Management() {
-  const navigate = useNavigate();
+  const { logout } = useAuth();
 
   const handleLogout = () => {
-    // Here you would typically clear any authentication tokens or user data
-    // For now, we'll just navigate back to the login page
-    navigate("/");
+    logout();
   };
 
   return (
