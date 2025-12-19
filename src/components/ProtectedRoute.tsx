@@ -8,6 +8,7 @@ const ProtectedRoute: React.FC = () => {
 
   if (isLoading) {
     // You can render a loading spinner here if you want
+    
     return <div>Loading...</div>;
   }
 
