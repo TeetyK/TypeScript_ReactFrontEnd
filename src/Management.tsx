@@ -8,16 +8,21 @@ import {useEffect , useState} from "react";
 
 export function Management() {
   const { logout , token } = useAuth();
-  const [ information , setInformation] = useState(null);
+  // const [ information , setInformation] = useState(null);
+  const [_id , setId ] = useState('');
+  const [_name , setName ] = useState('');
+  const [_email , setEmail ] = useState('');
+  const [_username , setUsername ] = useState('');
+  const [isProduct , setIsProduct] = useState(true);
   const handleLogout = () => {
-    setInformation(null)
+    // setInformation(null)
     logout();
   };
   useEffect(()=>{
     if(!token) return ;
     const fetchData = async () => {
       try{
-        const response = await fetch(`http://localhost:8080/users`,{
+        const response = await fetch(`http://localhost:8080/`,{
           method:'GET',
           headers:{
             'Content-Type':'application/json',
@@ -28,13 +33,13 @@ export function Management() {
           throw new Error(`HTTP error! status ${response.status}`);
         }
         const data = await response.json();
-        // console.log(data.data[0].id)
-        // console.log(data.data[0].username)
-        // console.log(data.data[0].email)
-        // console.log(data.data[0].password)
+        setId(data.user.id)
+        setName(data.user.name)
+        setEmail(data.user.email)
+        setUsername(data.user.username)
+        console.log(data)
         // console.log(data.data[0].updated_at)
-        // console.log(data.data[0].created_at)
-        setInformation(`ID : ${data.data[0].id} \n Email : ${data.data[0].email} Username : ${data.data[0].username}`);
+
       }catch(error){
         console.log("Fetch Error",error)
       }
@@ -42,7 +47,6 @@ export function Management() {
     fetchData();
   },[token]);
   
-  // console.log(token)
 
   return (
     
@@ -54,6 +58,16 @@ export function Management() {
       
       <header className="flex items-center justify-between p-4 bg-gray-100 dark:bg-gray-800 border-b">
         <h1 className="text-xl font-bold">Management</h1>
+        <button
+          className={`px-4 py-2 ${isProduct ? 'text-blue-500 border-b-2 border-blue-500' : 'text-gray-500'}`}
+          onClick={() => setIsProduct(true)}
+        >
+          Product
+        </button>
+        {/* <div className='text-xl font-bold'>Product</div> */}
+        <div className='text-xl font-bold'>Chatbot</div>
+        <div className='text-xl font-bold'>Forecast_Stack</div>
+        {/* <div className='text-xl font-bold'>Product</div> */}
         <Button onClick={handleLogout}>Logout</Button>
       </header>
       <main className="flex-1 p-8">
@@ -97,8 +111,11 @@ export function Management() {
                 <Input id="deleteProductId" placeholder="Enter product ID to delete" />
               </div>
               <Button className="w-full" variant="destructive">Delete Product</Button>
-              <div>{information}</div>
-              <div>{token}</div>
+              <div>ID : {_id}</div>
+              <div>Name : {_name}</div>
+              <div>Email : {_email}</div>
+              <div>Username : {_username}</div>
+              <div>Token : {token.slice(1,20)}</div>
             </CardContent>
           </Card>
         </div>

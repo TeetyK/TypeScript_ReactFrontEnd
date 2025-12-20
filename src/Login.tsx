@@ -23,6 +23,7 @@ export function Login(){
         body: JSON.stringify({email , password}),
       });
       const data = await response.json();
+      // console.log(data)
       if(response.ok){
         login(data.token);
         navigate('/management');
