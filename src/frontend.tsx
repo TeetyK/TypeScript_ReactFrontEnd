@@ -11,6 +11,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Management } from "./Management";
 import { App } from "./App";
 import { ForgotPassword } from "./ForgotPassword";
+import  ResetPassword  from './ResetPassword'
 import { APITester } from "./APITester";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -24,6 +25,7 @@ const app = (
         <Routes>
           <Route path="/" element={<App />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/api-tester" element={<APITester />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/management" element={<Management />} />
