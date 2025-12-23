@@ -47,7 +47,7 @@ export function Management() {
     fetchData();
   },[token]);
   
-
+  
   return (
     
     <div>
