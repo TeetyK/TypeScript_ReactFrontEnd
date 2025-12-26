@@ -1,10 +1,23 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle , CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "./contexts/AuthContext";
 // import LiquidEther from "./components/LiquidEther";
 import {useEffect , useState} from "react";
+
+interface Product {
+  id: number,
+  sku: string,
+  name: string,
+  description: string,
+  price: number,
+  stock_quantity: number,
+  category_id: number,
+  image_url: string,
+  created_at: string,
+  updated_at: string
+}
 
 export function Management() {
   const { logout , token } = useAuth();
@@ -14,12 +27,15 @@ export function Management() {
   const [_email , setEmail ] = useState('');
   const [_username , setUsername ] = useState('');
   const [isProduct , setIsProduct] = useState(true);
+  const [products , setProducts ] = useState<Product[]>([]);
   const handleLogout = () => {
     // setInformation(null)
     logout();
   };
   useEffect(()=>{
-    if(!token) return ;
+    if(!token){
+      return ;
+    } 
     const fetchData = async () => {
       try{
         const response = await fetch(`http://localhost:8080/`,{
@@ -47,6 +63,33 @@ export function Management() {
     fetchData();
   },[token]);
   
+  useEffect(()=>{
+    if(!token || !isProduct){
+      setProducts([]);
+      return ;
+    }
+    const fetchProductData = async () => {
+      try{
+        const response = await fetch(`http://localhost:8080/products`,{
+          method:'GET',
+          headers:{
+            'Content-Type':"application/json",
+            'Authorization':`Bearer ${token}`
+          }
+          });
+          if(!response.ok){
+            throw new Error(`HTTP error! status ${response.status}`);
+          }
+          const data = await response.json();
+          setProducts(data.data || []);
+          // console.log(data)
+
+      }catch(err){
+        console.log("Fetch Error",err)
+      }
+    }
+    fetchProductData();
+  },[isProduct , token])
   
   return (
     
@@ -116,6 +159,21 @@ export function Management() {
               <div>Email : {_email}</div>
               <div>Username : {_username}</div>
               <div>Token : {token.slice(1,20)}</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Product List</CardTitle>
+              <CardDescription>Total : {products.length} </CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-3 max-h-96 overflow-y-auto pr-4">
+             {products.map((product) => (
+              <div key={product.id} className="border p-3 rounded-md bg-muted/20">
+                <p className="font-semibold">{product.name}</p>
+                <p className="text-sm text-muted-foreground">{product.price}</p>
+              </div>
+             ))}
+              
             </CardContent>
           </Card>
         </div>
