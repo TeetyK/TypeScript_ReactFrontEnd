@@ -9,6 +9,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Management } from "./Management";
+import { Shop } from "./Shop";
 import { App } from "./App";
 import { ForgotPassword } from "./ForgotPassword";
 import  ResetPassword  from './ResetPassword'
@@ -29,6 +30,7 @@ const app = (
           <Route path="/api-tester" element={<APITester />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/management" element={<Management />} />
+            <Route path="/shop" element={<Shop />} />
           </Route>
         </Routes>
       </BrowserRouter>

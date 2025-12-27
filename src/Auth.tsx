@@ -4,7 +4,6 @@ import { Register } from './Register';
 
 export function Auth() {
   const [isLogin, setIsLogin] = useState(true);
-
   return (
     <div className="w-full max-w-md">
       <div className="flex justify-center mb-4">

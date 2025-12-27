@@ -26,7 +26,11 @@ export function Login(){
       // console.log(data)
       if(response.ok){
         login(data.token);
-        navigate('/management');
+        if(data.role == "0"){
+          navigate('/management');
+        }else{
+          navigate('/shop');
+        }
       }else{
         setError(data.message || "An error occured");
       }
