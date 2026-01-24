@@ -1,5 +1,7 @@
+import { useAuth } from './contexts/AuthContext';
 
-export function UploadImage({token}){
+export function UploadImage(){
+    const { token } = useAuth();
     const handleUploadImage = async (e:React.FormEvent) =>{
         e.preventDefault();
         const formData = new FormData();
