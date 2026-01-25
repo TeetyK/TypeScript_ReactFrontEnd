@@ -16,6 +16,7 @@ import  ResetPassword  from './ResetPassword'
 import { APITester } from "./APITester";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { ProductDtl } from "./ProductDtl";
 import "./index.css";
 
 const elem = document.getElementById("root")!;
@@ -31,6 +32,7 @@ const app = (
           <Route element={<ProtectedRoute />}>
             <Route path="/management" element={<Management />} />
             <Route path="/shop" element={<Shop />} />
+            <Route path="/product/:id" element={<ProductDtl />} />
           </Route>
         </Routes>
       </BrowserRouter>

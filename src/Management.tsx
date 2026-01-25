@@ -28,10 +28,60 @@ export function Management() {
   const [_username , setUsername ] = useState('');
   const [isProduct , setIsProduct] = useState(true);
   const [products , setProducts ] = useState<Product[]>([]);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [newProduct, setNewProduct] = useState({
+    sku: "",
+    name: "",
+    description: "",
+    price: 0,
+    stock_quantity: 0,
+    category_id: 0,
+    image_url: "",
+  });
+
   const handleLogout = () => {
     // setInformation(null)
     logout();
   };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setNewProduct((prev) => ({
+      ...prev,
+      [id]: ['price', 'stock_quantity', 'category_id'].includes(id) ? Number(value) : value,
+    }));
+  };
+
+  const handleAddProduct = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/products`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(newProduct)
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status ${response.status}`);
+      }
+      // Refresh products list
+      setRefreshKey(oldKey => oldKey + 1);
+      // Clear form
+      setNewProduct({
+        sku: "",
+        name: "",
+        description: "",
+        price: 0,
+        stock_quantity: 0,
+        category_id: 0,
+        image_url: "",
+      });
+    } catch (error) {
+      console.log("Fetch Error", error)
+    }
+  };
+
   useEffect(()=>{
     if(!token){
       return ;
@@ -89,7 +139,7 @@ export function Management() {
       }
     }
     fetchProductData();
-  },[isProduct , token])
+  },[isProduct , token, refreshKey])
   
   return (
     
@@ -122,14 +172,34 @@ export function Management() {
             </CardHeader>
             <CardContent className="grid gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="productName">Product Name</Label>
-                <Input id="productName" placeholder="Enter product name" />
+                <Label htmlFor="sku">SKU</Label>
+                <Input id="sku" placeholder="Enter SKU" value={newProduct.sku} onChange={handleInputChange} />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="productPrice">Price</Label>
-                <Input id="productPrice" type="number" placeholder="Enter price" />
+                <Label htmlFor="name">Product Name</Label>
+                <Input id="name" placeholder="Enter product name" value={newProduct.name} onChange={handleInputChange} />
               </div>
-              <Button className="w-full">Add Product</Button>
+              <div className="grid gap-2">
+                <Label htmlFor="description">Description</Label>
+                <Input id="description" placeholder="Enter description" value={newProduct.description} onChange={handleInputChange} />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="price">Price</Label>
+                <Input id="price" type="number" placeholder="Enter price" value={newProduct.price} onChange={handleInputChange} />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="stock_quantity">Stock Quantity</Label>
+                <Input id="stock_quantity" type="number" placeholder="Enter stock quantity" value={newProduct.stock_quantity} onChange={handleInputChange} />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="category_id">Category ID</Label>
+                <Input id="category_id" type="number" placeholder="Enter category ID" value={newProduct.category_id} onChange={handleInputChange} />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="image_url">Image URL</Label>
+                <Input id="image_url" placeholder="Enter image URL" value={newProduct.image_url} onChange={handleInputChange} />
+              </div>
+              <Button className="w-full" onClick={handleAddProduct}>Add Product</Button>
             </CardContent>
           </Card>
           <Card>

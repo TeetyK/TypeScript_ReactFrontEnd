@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "./contexts/AuthContext";
 import { useEffect , useState} from 'react'
+import { Link } from "react-router-dom";
+
 export function Shop(){
     const { logout , token } = useAuth();
     const [products , setProducts ] = useState([]);
@@ -78,16 +80,17 @@ export function Shop(){
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {products && products.length > 0 ? (
             products.map((product: any) => (
-              <Card key={product.id}>
-                <CardHeader>
-                  <CardTitle>{product.name || 'No Name'}</CardTitle>
-                  <CardDescription>{product.description || 'No description available.'}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="font-semibold">Price: ${product.price || 'N/A'}</p>
-                </CardContent>
-                <a href="#" className="font-bold underline grid gap-6 md:grid-cols-2 pl-5">Link Description</a>
-              </Card>
+              <Link to={`/product/${product.id}`} key={product.id}>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>{product.name || 'No Name'}</CardTitle>
+                    <CardDescription>{product.description || 'No description available.'}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="font-semibold">Price: ${product.price || 'N/A'}</p>
+                  </CardContent>
+                </Card>
+              </Link>
             ))
           ) : (
             <p>No products to display.</p>
