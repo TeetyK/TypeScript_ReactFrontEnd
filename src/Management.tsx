@@ -1,5 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle , CardDescription } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "./contexts/AuthContext";
@@ -29,6 +38,9 @@ export function Management() {
   const [isProduct , setIsProduct] = useState(true);
   const [products , setProducts ] = useState<Product[]>([]);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
+  const [isDescriptionModalOpen, setIsDescriptionModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [newProduct, setNewProduct] = useState({
     sku: "",
     name: "",
@@ -77,9 +89,15 @@ export function Management() {
         category_id: 0,
         image_url: "",
       });
+      setIsAddProductModalOpen(false); // Close modal on success
     } catch (error) {
       console.log("Fetch Error", error)
     }
+  };
+
+  const handleDescriptionClick = (product: Product) => {
+    setSelectedProduct(product);
+    setIsDescriptionModalOpen(true);
   };
 
   useEffect(()=>{
@@ -164,89 +182,115 @@ export function Management() {
         <Button onClick={handleLogout}>Logout</Button>
       </header>
       <main className="flex-1 p-8">
-        <h2 className="text-2xl font-bold mb-6">Product Management</h2>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <Card>
-            <CardHeader>
-              <CardTitle>Add New Product</CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="sku">SKU</Label>
-                <Input id="sku" placeholder="Enter SKU" value={newProduct.sku} onChange={handleInputChange} />
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold">Product List</h2>
+          <Dialog open={isAddProductModalOpen} onOpenChange={setIsAddProductModalOpen}>
+            <DialogTrigger asChild>
+              <Button>Add Product</Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Add New Product</DialogTitle>
+                <DialogDescription>
+                  Fill in the details below to add a new product.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="sku" className="text-right">
+                    SKU
+                  </Label>
+                  <Input id="sku" value={newProduct.sku} onChange={handleInputChange} className="col-span-3" />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="name" className="text-right">
+                    Name
+                  </Label>
+                  <Input id="name" value={newProduct.name} onChange={handleInputChange} className="col-span-3" />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="description" className="text-right">
+                    Description
+                  </Label>
+                  <Input id="description" value={newProduct.description} onChange={handleInputChange} className="col-span-3" />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="price" className="text-right">
+                    Price
+                  </Label>
+                  <Input id="price" type="number" value={newProduct.price} onChange={handleInputChange} className="col-span-3" />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="stock_quantity" className="text-right">
+                    Stock
+                  </Label>
+                  <Input id="stock_quantity" type="number" value={newProduct.stock_quantity} onChange={handleInputChange} className="col-span-3" />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="category_id" className="text-right">
+                    Category ID
+                  </Label>
+                  <Input id="category_id" type="number" value={newProduct.category_id} onChange={handleInputChange} className="col-span-3" />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="image_url" className="text-right">
+                    Image URL
+                  </Label>
+                  <Input id="image_url" value={newProduct.image_url} onChange={handleInputChange} className="col-span-3" />
+                </div>
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="name">Product Name</Label>
-                <Input id="name" placeholder="Enter product name" value={newProduct.name} onChange={handleInputChange} />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="description">Description</Label>
-                <Input id="description" placeholder="Enter description" value={newProduct.description} onChange={handleInputChange} />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="price">Price</Label>
-                <Input id="price" type="number" placeholder="Enter price" value={newProduct.price} onChange={handleInputChange} />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="stock_quantity">Stock Quantity</Label>
-                <Input id="stock_quantity" type="number" placeholder="Enter stock quantity" value={newProduct.stock_quantity} onChange={handleInputChange} />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="category_id">Category ID</Label>
-                <Input id="category_id" type="number" placeholder="Enter category ID" value={newProduct.category_id} onChange={handleInputChange} />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="image_url">Image URL</Label>
-                <Input id="image_url" placeholder="Enter image URL" value={newProduct.image_url} onChange={handleInputChange} />
-              </div>
-              <Button className="w-full" onClick={handleAddProduct}>Add Product</Button>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Edit Product</CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-4">
-               <div className="grid gap-2">
-                <Label htmlFor="productId">Product ID</Label>
-                <Input id="productId" placeholder="Enter product ID to edit" />
-              </div>
-              <Button className="w-full" variant="outline">Search Product</Button>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Delete Product</CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="deleteProductId">Product ID</Label>
-                <Input id="deleteProductId" placeholder="Enter product ID to delete" />
-              </div>
-              <Button className="w-full" variant="destructive">Delete Product</Button>
-              <div>ID : {_id}</div>
-              <div>Name : {_name}</div>
-              <div>Email : {_email}</div>
-              <div>Username : {_username}</div>
-              <div>Token : {token.slice(1,20)}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Product List</CardTitle>
-              <CardDescription>Total : {products.length} </CardDescription>
-            </CardHeader>
-            <CardContent className="grid gap-3 max-h-96 overflow-y-auto pr-4">
-             {products.map((product) => (
-              <div key={product.id} className="border p-3 rounded-md bg-muted/20">
-                <p className="font-semibold">{product.name}</p>
-                <p className="text-sm text-muted-foreground">{product.price}</p>
-              </div>
-             ))}
-              
-            </CardContent>
-          </Card>
+              <DialogFooter>
+                <Button type="submit" onClick={handleAddProduct}>Save product</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {products.map((product) => (
+            <Card key={product.id}>
+              <CardHeader>
+                <CardTitle>{product.name}</CardTitle>
+                <CardDescription>SKU: {product.sku}</CardDescription>
+              </CardHeader>
+              <CardContent className="grid gap-4">
+                <div>
+                  <p className="text-sm text-muted-foreground">Price: ${product.price}</p>
+                  <p className="text-sm text-muted-foreground">Stock: {product.stock_quantity}</p>
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={() => handleDescriptionClick(product)}>Description</Button>
+                  <Button variant="outline" size="sm">Edit</Button>
+                  <Button variant="destructive" size="sm">Delete</Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {selectedProduct && (
+          <Dialog open={isDescriptionModalOpen} onOpenChange={setIsDescriptionModalOpen}>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>{selectedProduct.name}</DialogTitle>
+                <DialogDescription>
+                  SKU: {selectedProduct.sku}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <img src={selectedProduct.image_url} alt={selectedProduct.name} className="w-full h-48 object-cover rounded-md" />
+                <p><span className="font-semibold">Description:</span> {selectedProduct.description}</p>
+                <p><span className="font-semibold">Price:</span> ${selectedProduct.price}</p>
+                <p><span className="font-semibold">Stock:</span> {selectedProduct.stock_quantity}</p>
+                <p><span className="font-semibold">Category ID:</span> {selectedProduct.category_id}</p>
+                <p><span className="font-semibold">Created At:</span> {new Date(selectedProduct.created_at).toLocaleString()}</p>
+                <p><span className="font-semibold">Last Updated:</span> {new Date(selectedProduct.updated_at).toLocaleString()}</p>
+              </div>
+              <DialogFooter>
+                <Button onClick={() => setIsDescriptionModalOpen(false)}>Close</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
       </main>
     </div>
     </div>
