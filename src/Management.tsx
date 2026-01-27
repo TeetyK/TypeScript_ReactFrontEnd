@@ -40,6 +40,8 @@ export function Management() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
   const [isDescriptionModalOpen, setIsDescriptionModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [newProduct, setNewProduct] = useState({
     sku: "",
@@ -98,6 +100,46 @@ export function Management() {
   const handleDescriptionClick = (product: Product) => {
     setSelectedProduct(product);
     setIsDescriptionModalOpen(true);
+  };
+
+  const handleEditClick = (product: Product) => {
+    setEditingProduct(product);
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    if (editingProduct) {
+      setEditingProduct({
+        ...editingProduct,
+        [id]: ['price', 'stock_quantity', 'category_id'].includes(id) ? Number(value) : value,
+      });
+    }
+  };
+
+  const handleUpdateProduct = async () => {
+    if (!editingProduct) return;
+
+    try {
+      const response = await fetch(`http://localhost:8080/products/${editingProduct.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(editingProduct)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status ${response.status}`);
+      }
+
+      setRefreshKey(oldKey => oldKey + 1);
+      setIsEditModalOpen(false);
+      setEditingProduct(null);
+    } catch (error) {
+      console.log("Fetch Error", error);
+    }
   };
 
   useEffect(()=>{
@@ -245,26 +287,37 @@ export function Management() {
             </DialogContent>
           </Dialog>
         </div>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {products.map((product) => (
-            <Card key={product.id}>
-              <CardHeader>
-                <CardTitle>{product.name}</CardTitle>
-                <CardDescription>SKU: {product.sku}</CardDescription>
-              </CardHeader>
-              <CardContent className="grid gap-4">
-                <div>
-                  <p className="text-sm text-muted-foreground">Price: ${product.price}</p>
-                  <p className="text-sm text-muted-foreground">Stock: {product.stock_quantity}</p>
-                </div>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={() => handleDescriptionClick(product)}>Description</Button>
-                  <Button variant="outline" size="sm">Edit</Button>
-                  <Button variant="destructive" size="sm">Delete</Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+        <div className="border rounded-lg w-full">
+          <div className="relative w-full overflow-auto">
+            <table className="w-full caption-bottom text-sm">
+              <thead className="[&_tr]:border-b">
+                <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">Name</th>
+                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">SKU</th>
+                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">Price</th>
+                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">Stock</th>
+                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="[&_tr:last-child]:border-0">
+                {products.map((product) => (
+                  <tr key={product.id} className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                    <td className="p-4 align-middle [&:has([role=checkbox])]:pr-0 font-medium">{product.name}</td>
+                    <td className="p-4 align-middle [&:has([role=checkbox])]:pr-0 text-muted-foreground">{product.sku}</td>
+                    <td className="p-4 align-middle [&:has([role=checkbox])]:pr-0 text-muted-foreground">${product.price}</td>
+                    <td className="p-4 align-middle [&:has([role=checkbox])]:pr-0 text-muted-foreground">{product.stock_quantity}</td>
+                    <td className="p-4 align-middle [&:has([role=checkbox])]:pr-0">
+                      <div className="flex gap-2">
+                        <Button variant="outline" size="sm" onClick={() => handleDescriptionClick(product)}>Description</Button>
+                        <Button variant="outline" size="sm" onClick={() => handleEditClick(product)}>Edit</Button>
+                        <Button variant="destructive" size="sm">Delete</Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         {selectedProduct && (
@@ -287,6 +340,66 @@ export function Management() {
               </div>
               <DialogFooter>
                 <Button onClick={() => setIsDescriptionModalOpen(false)}>Close</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
+
+        {editingProduct && (
+          <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Edit Product</DialogTitle>
+                <DialogDescription>
+                  Update the details for {editingProduct.name}.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="sku" className="text-right">
+                    SKU
+                  </Label>
+                  <Input id="sku" value={editingProduct.sku} onChange={handleEditInputChange} className="col-span-3" />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="name" className="text-right">
+                    Name
+                  </Label>
+                  <Input id="name" value={editingProduct.name} onChange={handleEditInputChange} className="col-span-3" />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="description" className="text-right">
+                    Description
+                  </Label>
+                  <Input id="description" value={editingProduct.description} onChange={handleEditInputChange} className="col-span-3" />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="price" className="text-right">
+                    Price
+                  </Label>
+                  <Input id="price" type="number" value={editingProduct.price} onChange={handleEditInputChange} className="col-span-3" />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="stock_quantity" className="text-right">
+                    Stock
+                  </Label>
+                  <Input id="stock_quantity" type="number" value={editingProduct.stock_quantity} onChange={handleEditInputChange} className="col-span-3" />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="category_id" className="text-right">
+                    Category ID
+                  </Label>
+                  <Input id="category_id" type="number" value={editingProduct.category_id} onChange={handleEditInputChange} className="col-span-3" />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="image_url" className="text-right">
+                    Image URL
+                  </Label>
+                  <Input id="image_url" value={editingProduct.image_url} onChange={handleEditInputChange} className="col-span-3" />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button type="submit" onClick={handleUpdateProduct}>Save changes</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
