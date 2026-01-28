@@ -41,6 +41,7 @@ export function Management() {
   const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
   const [isDescriptionModalOpen, setIsDescriptionModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteConfirmModalOpen, setIsDeleteConfirmModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [newProduct, setNewProduct] = useState({
@@ -62,7 +63,7 @@ export function Management() {
     const { id, value } = e.target;
     setNewProduct((prev) => ({
       ...prev,
-      [id]: ['price', 'stock_quantity', 'category_id'].includes(id) ? Number(value) : value,
+      [id]: ['price', 'stock_quantity', 'category_id'].includes(id) ? Math.max(0, Number(value)) : value,
     }));
   };
 
@@ -107,12 +108,17 @@ export function Management() {
     setIsEditModalOpen(true);
   };
 
+  const handleDeleteClick = (product: Product) => {
+    setSelectedProduct(product);
+    setIsDeleteConfirmModalOpen(true);
+  };
+
   const handleEditInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     if (editingProduct) {
       setEditingProduct({
         ...editingProduct,
-        [id]: ['price', 'stock_quantity', 'category_id'].includes(id) ? Number(value) : value,
+        [id]: ['price', 'stock_quantity', 'category_id'].includes(id) ? Math.max(0, Number(value)) : value,
       });
     }
   };
@@ -137,6 +143,30 @@ export function Management() {
       setRefreshKey(oldKey => oldKey + 1);
       setIsEditModalOpen(false);
       setEditingProduct(null);
+    } catch (error) {
+      console.log("Fetch Error", error);
+    }
+  };
+
+  const handleDeleteProduct = async () => {
+    if (!selectedProduct) return;
+
+    try {
+      const response = await fetch(`http://localhost:8080/products/${selectedProduct.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status ${response.status}`);
+      }
+
+      setRefreshKey(oldKey => oldKey + 1);
+      setIsDeleteConfirmModalOpen(false);
+      setSelectedProduct(null);
     } catch (error) {
       console.log("Fetch Error", error);
     }
@@ -260,19 +290,19 @@ export function Management() {
                   <Label htmlFor="price" className="text-right">
                     Price
                   </Label>
-                  <Input id="price" type="number" value={newProduct.price} onChange={handleInputChange} className="col-span-3" />
+                  <Input id="price" type="number" min="0" value={newProduct.price} onChange={handleInputChange} className="col-span-3" />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="stock_quantity" className="text-right">
                     Stock
                   </Label>
-                  <Input id="stock_quantity" type="number" value={newProduct.stock_quantity} onChange={handleInputChange} className="col-span-3" />
+                  <Input id="stock_quantity" type="number" min="0" value={newProduct.stock_quantity} onChange={handleInputChange} className="col-span-3" />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="category_id" className="text-right">
                     Category ID
                   </Label>
-                  <Input id="category_id" type="number" value={newProduct.category_id} onChange={handleInputChange} className="col-span-3" />
+                  <Input id="category_id" type="number" min="0" value={newProduct.category_id} onChange={handleInputChange} className="col-span-3" />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="image_url" className="text-right">
@@ -310,7 +340,7 @@ export function Management() {
                       <div className="flex gap-2">
                         <Button variant="outline" size="sm" onClick={() => handleDescriptionClick(product)}>Description</Button>
                         <Button variant="outline" size="sm" onClick={() => handleEditClick(product)}>Edit</Button>
-                        <Button variant="destructive" size="sm">Delete</Button>
+                        <Button variant="destructive" size="sm" onClick={() => handleDeleteClick(product)}>Delete</Button>
                       </div>
                     </td>
                   </tr>
@@ -377,19 +407,19 @@ export function Management() {
                   <Label htmlFor="price" className="text-right">
                     Price
                   </Label>
-                  <Input id="price" type="number" value={editingProduct.price} onChange={handleEditInputChange} className="col-span-3" />
+                  <Input id="price" type="number" min="0" value={editingProduct.price} onChange={handleEditInputChange} className="col-span-3" />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="stock_quantity" className="text-right">
                     Stock
                   </Label>
-                  <Input id="stock_quantity" type="number" value={editingProduct.stock_quantity} onChange={handleEditInputChange} className="col-span-3" />
+                  <Input id="stock_quantity" type="number" min="0" value={editingProduct.stock_quantity} onChange={handleEditInputChange} className="col-span-3" />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="category_id" className="text-right">
                     Category ID
                   </Label>
-                  <Input id="category_id" type="number" value={editingProduct.category_id} onChange={handleEditInputChange} className="col-span-3" />
+                  <Input id="category_id" type="number" min="0" value={editingProduct.category_id} onChange={handleEditInputChange} className="col-span-3" />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="image_url" className="text-right">
@@ -400,6 +430,23 @@ export function Management() {
               </div>
               <DialogFooter>
                 <Button type="submit" onClick={handleUpdateProduct}>Save changes</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
+
+        {selectedProduct && (
+          <Dialog open={isDeleteConfirmModalOpen} onOpenChange={setIsDeleteConfirmModalOpen}>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Confirm Deletion</DialogTitle>
+                <DialogDescription>
+                  Are you sure you want to delete the product "{selectedProduct.name}"? This action cannot be undone.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setIsDeleteConfirmModalOpen(false)}>Cancel</Button>
+                <Button variant="destructive" onClick={handleDeleteProduct}>Confirm</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
